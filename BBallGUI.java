@@ -1,5 +1,6 @@
 import java.awt.Container;
 import javax.swing.JFrame;
+import javax.swing.JMenuBar;
 /**
  *  @author: Adam Aguirre
  *  Assignment 10
@@ -13,7 +14,9 @@ public class BBallGUI extends JFrame {
         setTitle("My BBall Stats Program");
 
         Container pane = getContentPane();
-        pane.add(new BBallPanel());
+        JMenuBar menu = new JMenuBar();
+        setJMenuBar(menu);
+        pane.add(new BBallPanel(menu));
 
     }
 
