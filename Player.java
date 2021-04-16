@@ -6,6 +6,9 @@ public class Player {
     private int rebounds;
     private int assists;
     private int turnOvers;
+    private String conference;
+    private int position;
+    private boolean starter;
 
     public Player(String fName, String lName, double shootPct, int rebounds, int assists, int turnOvers){
         this.fName = fName;
@@ -14,6 +17,17 @@ public class Player {
         this.rebounds = rebounds;
         this.assists = assists;
         this.turnOvers = turnOvers;
+    }
+    public Player(String fName, String lName, double shootPct, int rebounds, int assists, int turnOvers, String con, int pos, boolean starter){
+        this.fName = fName;
+        this.lName = lName;
+        this.shootPct = shootPct;
+        this.rebounds = rebounds;
+        this.assists = assists;
+        this.turnOvers = turnOvers;
+        this.conference = con;
+        this.position = pos;
+        this.starter = starter;
     }
 
     public String getfName() {
@@ -34,6 +48,15 @@ public class Player {
     public int getTurnOvers() {
         return turnOvers;
     }
+    public String getConference() {
+        return conference;
+    }
+    public int getPosition() {
+        return position;
+    }
+    public boolean isStarter() {
+        return starter;
+    }
     public void setfName(String fName) {
         this.fName = fName;
     }
@@ -52,9 +75,20 @@ public class Player {
     public void setTurnOvers(int turnOvers) {
         this.turnOvers = turnOvers;
     }
+    public void setConference(String conference) {
+        this.conference = conference;
+    }
+    public void setPosition(int position) {
+        this.position = position;
+    }
+    public void setStarter(boolean starter) {
+        this.starter = starter;
+    }
+    
     @Override
     public String toString() {
         return "Player:[fname: " + getfName() + ", lname: " + getlName() + ", shootPct:" + getShootPct() + 
-               ", Rebounds:" + getRebounds() + ", Assists:" + getAssists() + ", Turn Overs:" + getTurnOvers() + "]";
+               ", Rebounds:" + getRebounds() + ", Assists:" + getAssists() + ", Turn Overs:" + getTurnOvers() + 
+               ", Conference: " + getConference() + ", Position: " + getPosition() + ", Starter" + isStarter() + "]";
     }
 }
