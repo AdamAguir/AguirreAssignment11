@@ -1,17 +1,30 @@
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
+import java.net.http.WebSocket;
 import java.util.ArrayList;
+
+import javax.swing.Box;
+import javax.swing.BoxLayout;
+import javax.swing.ButtonGroup;
+import javax.swing.CellEditor;
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
+import javax.swing.JComboBox;
 import javax.swing.JLabel;
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JRadioButton;
 import javax.swing.JTextField;
+import javax.swing.KeyStroke;
 import javax.swing.SwingConstants;
 /**
  *  @author: Adam Aguirre
- *  Assignment 10
- *  Date: 4/14/21
+ *  Assignment 11
+ *  Date: 
  */
 public class BBallPanel extends JPanel {
 
@@ -40,16 +53,36 @@ public class BBallPanel extends JPanel {
     private JPanel panelNorth = new JPanel();
     private JPanel panelCenter = new JPanel();
     private JPanel panelSouth = new JPanel();
+    private JPanel panelWest = new JPanel();
     private String fname;
     private String lname;
     private double shootPct;
     private int rebounds;
     private int assists;
     private int turnOvers;
+    private JMenuBar menu;
+    private JMenu fileMnu = new JMenu("File");
+    private JMenu dataMnu = new JMenu("Data");
+    private JMenuItem saveMI = new JMenuItem("Save");
+    private JMenuItem exitMI = new JMenuItem("Exit");
+    private JMenuItem newMI = new JMenuItem("New");
+    private JMenuItem loadMI = new JMenuItem("Load");
+    private JMenuItem firstMI = new JMenuItem("First");
+    private JMenuItem lastMI = new JMenuItem("Last");
+    private JButton loadBTN = new JButton("Load");
+    private JRadioButton eastRB = new JRadioButton("east");
+    private JRadioButton westRB = new JRadioButton("west");
+    private ButtonGroup buttonGroup = new ButtonGroup();
+    private JCheckBox starterCB = new JCheckBox();
+    private JLabel positionLBL = new JLabel("Position");
+    private String[] posValues = {"Point Guard", "Shooting Guard", "Small Forward", "Power Forward", "Center"};
+    private JComboBox positionCMB = new JComboBox(posValues);
 
-    public BBallPanel() {
+    public BBallPanel(JMenuBar menu) {
         // setBackground(Color.CYAN);
         setLayout(new BorderLayout());
+        this.menu = menu;
+        makeMenu();
 
         fNameLBL.setPreferredSize(new Dimension(120, 25));
         lNameLBL.setPreferredSize(new Dimension(120, 25));
@@ -64,13 +97,26 @@ public class BBallPanel extends JPanel {
         reboundsLBL.setHorizontalAlignment(SwingConstants.RIGHT);
         turnoversLBL.setHorizontalAlignment(SwingConstants.RIGHT);
 
-        panelNorth.setBackground(new Color(18, 150, 176));
-        panelCenter.setBackground(new Color(14, 192, 227));
-        panelSouth.setBackground(new Color(18, 150, 176));
+        // panelNorth.setBackground(Color.BLACK);
+        // panelCenter.setBackground(Color.ORANGE);
+        // panelSouth.setBackground(Color.BLACK);
+        panelWest.setLayout(new BoxLayout(panelWest, BoxLayout.PAGE_AXIS));
 
         add(panelNorth, BorderLayout.NORTH);
         add(panelCenter, BorderLayout.CENTER);
         add(panelSouth, BorderLayout.SOUTH);
+        add(panelWest, BorderLayout.WEST);
+
+        buttonGroup.add(eastRB);
+        buttonGroup.add(westRB);
+        Box row = Box.createHorizontalBox();
+        row.add(eastRB);
+        row.add(westRB);
+        loadBTN.setAlignmentX(CENTER_ALIGNMENT);
+        starterCB.setAlignmentX(CENTER_ALIGNMENT);
+        positionLBL.setAlignmentX(CENTER_ALIGNMENT);
+        positionCMB.setAlignmentX(CENTER_ALIGNMENT);
+        //positionLBL.setSize(new Dimension(10,10));
 
         panelNorth.add(newBTN);
         panelNorth.add(saveBTN);
@@ -92,15 +138,29 @@ public class BBallPanel extends JPanel {
         panelSouth.add(previousBTN);
         panelSouth.add(nextBTN);
         panelSouth.add(toLastBTN);
+        panelWest.add(loadBTN);
+        panelWest.add(Box.createRigidArea(new Dimension(0,10)));
+        panelWest.add(row);
+        panelWest.add(Box.createRigidArea(new Dimension(0,10)));
+        panelWest.add(starterCB);
+        panelWest.add(Box.createRigidArea(new Dimension(0,10)));
+        panelWest.add(positionLBL);
+        panelWest.add(Box.createRigidArea(new Dimension(0,10)));
+        panelWest.add(positionCMB);
 
         newBTN.addActionListener(e -> newRecord());
         saveBTN.addActionListener(e -> saveRecord());
         exitBTN.addActionListener(e -> System.exit(0));
+        loadBTN.addActionListener(e -> loadData());
         toFirstBTN.addActionListener(e -> firstRecord());
         previousBTN.addActionListener(e -> previousRecord());
         nextBTN.addActionListener(e -> nextRecord());
         toLastBTN.addActionListener(e -> lastRecord());
 
+        newBTN.setMnemonic('N');
+        saveBTN.setMnemonic('S');
+        loadBTN.setMnemonic('O');
+        exitBTN.setMnemonic('E');
     }
 
     private void newRecord() {
@@ -163,5 +223,35 @@ public class BBallPanel extends JPanel {
         reboundsTXT.setText(String.valueOf(players.get(index).getRebounds()));
         assistsTXT.setText(String.valueOf(players.get(index).getAssists()));
         turnoverseTXT.setText(String.valueOf(players.get(index).getTurnOvers()));
+    }
+    private void makeMenu(){
+       // menu.setBackground(Color.ORANGE);
+        menu.add(fileMnu);
+        menu.add(dataMnu);
+        fileMnu.add(newMI);
+        fileMnu.add(loadMI);
+        fileMnu.add(saveMI);
+        fileMnu.add(exitMI);
+        dataMnu.add(firstMI);
+        dataMnu.add(lastMI);
+
+        saveMI.addActionListener(e -> saveRecord());
+        exitMI.addActionListener(e -> System.exit(0));
+        newMI.addActionListener(e -> newRecord());
+        loadMI.addActionListener(e -> loadData());
+        firstMI.addActionListener(e -> firstRecord());
+        lastMI.addActionListener(e -> lastRecord());
+
+        saveMI.setAccelerator(KeyStroke.getKeyStroke("ctrl S"));
+        exitMI.setAccelerator(KeyStroke.getKeyStroke("ctrl E"));
+        newMI.setAccelerator(KeyStroke.getKeyStroke("ctrl N"));
+        loadMI.setAccelerator(KeyStroke.getKeyStroke("ctrl O"));
+        firstMI.setAccelerator(KeyStroke.getKeyStroke("ctrl F"));
+        lastMI.setAccelerator(KeyStroke.getKeyStroke("ctrl L"));
+
+    }
+    private void loadData(){
+        // TODO:
+        System.out.println("Loading Data");
     }
 }

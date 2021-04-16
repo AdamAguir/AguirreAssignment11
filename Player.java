@@ -1,3 +1,8 @@
+/**
+ *  @author: Adam Aguirre
+ *  Assignment 11
+ *  Date: 
+ */
 public class Player {
 
     private String fName;

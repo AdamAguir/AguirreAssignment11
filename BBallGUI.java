@@ -3,13 +3,13 @@ import javax.swing.JFrame;
 import javax.swing.JMenuBar;
 /**
  *  @author: Adam Aguirre
- *  Assignment 10
- *  Date: 4/14/21
+ *  Assignment 11
+ *  Date: 
  */
 public class BBallGUI extends JFrame {
 
     public BBallGUI() {
-        setSize(300, 300);
+        setSize(450, 350);
         setResizable(false);
         setTitle("My BBall Stats Program");
 
