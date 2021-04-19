@@ -1,4 +1,6 @@
 import java.awt.Container;
+import java.io.FileNotFoundException;
+
 import javax.swing.JFrame;
 import javax.swing.JMenuBar;
 /**
@@ -8,7 +10,7 @@ import javax.swing.JMenuBar;
  */
 public class BBallGUI extends JFrame {
 
-    public BBallGUI() {
+    public BBallGUI() throws FileNotFoundException {
         setSize(450, 350);
         setResizable(false);
         setTitle("My BBall Stats Program");
@@ -20,7 +22,7 @@ public class BBallGUI extends JFrame {
 
     }
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws FileNotFoundException {
         BBallGUI frame = new BBallGUI();
         frame.setVisible(true);
         frame.setDefaultCloseOperation(EXIT_ON_CLOSE);

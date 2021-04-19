@@ -1,16 +1,18 @@
 import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.Dimension;
-import java.net.http.WebSocket;
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
+import java.util.Scanner;
 
+import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.ButtonGroup;
-import javax.swing.CellEditor;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
+import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
@@ -21,6 +23,7 @@ import javax.swing.JRadioButton;
 import javax.swing.JTextField;
 import javax.swing.KeyStroke;
 import javax.swing.SwingConstants;
+import javax.swing.border.Border;
 /**
  *  @author: Adam Aguirre
  *  Assignment 11
@@ -61,6 +64,9 @@ public class BBallPanel extends JPanel {
     private int assists;
     private int turnOvers;
     private JMenuBar menu;
+    private String con;
+    private int pos;
+    private boolean start;
     private JMenu fileMnu = new JMenu("File");
     private JMenu dataMnu = new JMenu("Data");
     private JMenuItem saveMI = new JMenuItem("Save");
@@ -77,8 +83,12 @@ public class BBallPanel extends JPanel {
     private JLabel positionLBL = new JLabel("Position");
     private String[] posValues = {"Point Guard", "Shooting Guard", "Small Forward", "Power Forward", "Center"};
     private JComboBox positionCMB = new JComboBox(posValues);
-
-    public BBallPanel(JMenuBar menu) {
+    private Border etched = BorderFactory.createEtchedBorder(); 
+    private Border titled = BorderFactory.createTitledBorder(etched, "Conference");  
+    private Border lowerEtched = BorderFactory.createEtchedBorder();
+    private Border raised = BorderFactory.createRaisedBevelBorder();  
+    
+    public BBallPanel(JMenuBar menu) throws FileNotFoundException {
         // setBackground(Color.CYAN);
         setLayout(new BorderLayout());
         this.menu = menu;
@@ -116,6 +126,7 @@ public class BBallPanel extends JPanel {
         starterCB.setAlignmentX(CENTER_ALIGNMENT);
         positionLBL.setAlignmentX(CENTER_ALIGNMENT);
         positionCMB.setAlignmentX(CENTER_ALIGNMENT);
+        positionCMB.setMaximumSize(positionCMB.getPreferredSize());
         //positionLBL.setSize(new Dimension(10,10));
 
         panelNorth.add(newBTN);
@@ -151,7 +162,7 @@ public class BBallPanel extends JPanel {
         newBTN.addActionListener(e -> newRecord());
         saveBTN.addActionListener(e -> saveRecord());
         exitBTN.addActionListener(e -> System.exit(0));
-        loadBTN.addActionListener(e -> loadData());
+        loadBTN.addActionListener(e -> new FileChooser(BBallPanel.this));
         toFirstBTN.addActionListener(e -> firstRecord());
         previousBTN.addActionListener(e -> previousRecord());
         nextBTN.addActionListener(e -> nextRecord());
@@ -161,7 +172,13 @@ public class BBallPanel extends JPanel {
         saveBTN.setMnemonic('S');
         loadBTN.setMnemonic('O');
         exitBTN.setMnemonic('E');
+        
+        row.setBorder(titled);
+        panelNorth.setBorder(lowerEtched);
+        panelSouth.setBorder(lowerEtched);
+        panelCenter.setBorder(raised);
     }
+    
 
     private void newRecord() {
         index = players.size();
@@ -172,6 +189,7 @@ public class BBallPanel extends JPanel {
         reboundsTXT.setText("");
         assistsTXT.setText("");
         turnoverseTXT.setText("");
+        buttonGroup.clearSelection();
     }
 
     private void saveRecord() {
@@ -181,8 +199,17 @@ public class BBallPanel extends JPanel {
         rebounds = Integer.parseInt(reboundsTXT.getText());
         assists = Integer.parseInt(assistsTXT.getText());
         turnOvers = Integer.parseInt(turnoverseTXT.getText());
+        if (westRB.isSelected()) {
+            con = "west";
+        }
+        if (eastRB.isSelected()) {
+            con = "east";
+        }
+        pos = positionCMB.getSelectedIndex();
+        start = starterCB.isSelected();
 
-        players.add(new Player(fname, lname, shootPct, rebounds, assists, turnOvers));
+
+        players.add(new Player(fname, lname, shootPct, rebounds, assists, turnOvers, con, pos, start));
         newRecord();
 
     }
@@ -223,6 +250,16 @@ public class BBallPanel extends JPanel {
         reboundsTXT.setText(String.valueOf(players.get(index).getRebounds()));
         assistsTXT.setText(String.valueOf(players.get(index).getAssists()));
         turnoverseTXT.setText(String.valueOf(players.get(index).getTurnOvers()));
+        if (players.get(index).getConference() == "east") {
+            eastRB.setSelected(true);
+        }
+        if (players.get(index).getConference() == "west") {
+            westRB.setSelected(true);
+        }
+        if (players.get(index).isStarter()) {
+            starterCB.setSelected(true);
+        }
+        positionCMB.setSelectedIndex(players.get(index).getPosition());
     }
     private void makeMenu(){
        // menu.setBackground(Color.ORANGE);
@@ -238,7 +275,7 @@ public class BBallPanel extends JPanel {
         saveMI.addActionListener(e -> saveRecord());
         exitMI.addActionListener(e -> System.exit(0));
         newMI.addActionListener(e -> newRecord());
-        loadMI.addActionListener(e -> loadData());
+        loadMI.addActionListener(e -> new FileChooser(BBallPanel.this));
         firstMI.addActionListener(e -> firstRecord());
         lastMI.addActionListener(e -> lastRecord());
 
@@ -250,8 +287,23 @@ public class BBallPanel extends JPanel {
         lastMI.setAccelerator(KeyStroke.getKeyStroke("ctrl L"));
 
     }
-    private void loadData(){
-        // TODO:
-        System.out.println("Loading Data");
+    public void loadData(File data) throws FileNotFoundException{
+        Scanner scan = new Scanner(data);
+        while (scan.hasNextLine()) {
+            fname = scan.next();
+            lname = scan.next();
+            shootPct = Integer.parseInt(scan.next());
+            rebounds = Integer.parseInt(scan.next());
+            assists = Integer.parseInt(scan.next());
+            turnOvers = Integer.parseInt(scan.next());
+            con = scan.next();
+            pos = Integer.parseInt(scan.next());
+            start = Boolean.parseBoolean(scan.next());
+    
+    
+            players.add(new Player(fname, lname, shootPct, rebounds, assists, turnOvers, con, pos, start));
+            newRecord(); 
+        }
+        scan.close();
     }
 }
