@@ -3,10 +3,9 @@ import java.io.FileNotFoundException;
 
 import javax.swing.JFrame;
 import javax.swing.JMenuBar;
+
 /**
- *  @author: Adam Aguirre
- *  Assignment 11
- *  Date: 
+ * @author: Adam Aguirre Assignment 11 Date:
  */
 public class BBallGUI extends JFrame {
 
