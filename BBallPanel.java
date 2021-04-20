@@ -77,8 +77,8 @@ public class BBallPanel extends JPanel {
     private JMenuItem firstMI = new JMenuItem("First");
     private JMenuItem lastMI = new JMenuItem("Last");
     private JButton loadBTN = new JButton("Load");
-    private JRadioButton eastRB = new JRadioButton("east");
-    private JRadioButton westRB = new JRadioButton("west");
+    private JRadioButton eastRB = new JRadioButton("East");
+    private JRadioButton westRB = new JRadioButton("West");
     private ButtonGroup buttonGroup = new ButtonGroup();
     private JCheckBox starterCB = new JCheckBox();
     private JLabel positionLBL = new JLabel("Position");
@@ -202,10 +202,10 @@ public class BBallPanel extends JPanel {
         } else {
             if (westRB.isSelected() || eastRB.isSelected()) {
                 if (westRB.isSelected()) {
-                    con = "west";
+                    con = "West";
                 }
                 if (eastRB.isSelected()) {
-                    con = "east";
+                    con = "East";
                 }
                 players.add(new Player(fname, lname, shootPct, rebounds, assists, turnOvers, con, pos, start));
                 newRecord();
@@ -252,14 +252,16 @@ public class BBallPanel extends JPanel {
         reboundsTXT.setText(String.valueOf(players.get(index).getRebounds()));
         assistsTXT.setText(String.valueOf(players.get(index).getAssists()));
         turnoverseTXT.setText(String.valueOf(players.get(index).getTurnOvers()));
-        if (players.get(index).getConference() == "east") {
+        // use .contains for comparint the strings
+        if (players.get(index).getConference().contains("East")) {
             eastRB.setSelected(true);
-        }
-        if (players.get(index).getConference() == "west") {
+        } else {
             westRB.setSelected(true);
         }
         if (players.get(index).isStarter()) {
             starterCB.setSelected(true);
+        } else {
+            starterCB.setSelected(false);
         }
         positionCMB.setSelectedIndex(players.get(index).getPosition());
     }
@@ -292,7 +294,6 @@ public class BBallPanel extends JPanel {
     }
 
     public void loadData(File data) throws FileNotFoundException {
-        System.out.println("Entered load method");
         Scanner scan = new Scanner(data);
         while (scan.hasNextLine()) {
             fname = scan.next();
@@ -304,9 +305,9 @@ public class BBallPanel extends JPanel {
             con = scan.next();
             pos = scan.nextInt();
             start = scan.nextBoolean();
-            // System.out.println("fname: " + fname + " lname: " + " shootPct: " + shootPct
-            // + " rebounds: " + " assists: " + assists + " TurnOvers: " + turnOvers + "
-            // Conferance: " + con + " Pos: " + pos + " Start: " + start);
+            // System.out.println("fname: " + fname + " lname: " + lname + " shootPct: " + shootPct
+            // + " rebounds: " + rebounds + " assists: " + assists + " TurnOvers: " + turnOvers + 
+            // " Conferance: " + con + " Pos: " + pos + " Start: " + start);
             players.add(new Player(fname, lname, shootPct, rebounds, assists, turnOvers, con, pos, start));
             newRecord();
         }
@@ -326,7 +327,6 @@ public class BBallPanel extends JPanel {
                 File selectedFile = fileChooser.getSelectedFile();
                 try {
                     loadData(selectedFile);
-                    System.out.println("File loaded");
                 } catch (FileNotFoundException s) {
                     s.printStackTrace();
                 }
