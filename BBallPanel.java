@@ -1,10 +1,11 @@
 import java.awt.BorderLayout;
 import java.awt.Dimension;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Scanner;
-
 import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
@@ -24,10 +25,10 @@ import javax.swing.JTextField;
 import javax.swing.KeyStroke;
 import javax.swing.SwingConstants;
 import javax.swing.border.Border;
+import javax.swing.filechooser.FileNameExtensionFilter;
+
 /**
- *  @author: Adam Aguirre
- *  Assignment 11
- *  Date: 
+ * @author: Adam Aguirre Assignment 11 Date: 4/20/21
  */
 public class BBallPanel extends JPanel {
 
@@ -81,13 +82,13 @@ public class BBallPanel extends JPanel {
     private ButtonGroup buttonGroup = new ButtonGroup();
     private JCheckBox starterCB = new JCheckBox();
     private JLabel positionLBL = new JLabel("Position");
-    private String[] posValues = {"Point Guard", "Shooting Guard", "Small Forward", "Power Forward", "Center"};
+    private String[] posValues = { "Point Guard", "Shooting Guard", "Small Forward", "Power Forward", "Center" };
     private JComboBox positionCMB = new JComboBox(posValues);
-    private Border etched = BorderFactory.createEtchedBorder(); 
-    private Border titled = BorderFactory.createTitledBorder(etched, "Conference");  
+    private Border etched = BorderFactory.createEtchedBorder();
+    private Border titled = BorderFactory.createTitledBorder(etched, "Conference");
     private Border lowerEtched = BorderFactory.createEtchedBorder();
-    private Border raised = BorderFactory.createRaisedBevelBorder();  
-    
+    private Border raised = BorderFactory.createRaisedBevelBorder();
+
     public BBallPanel(JMenuBar menu) throws FileNotFoundException {
         // setBackground(Color.CYAN);
         setLayout(new BorderLayout());
@@ -107,9 +108,6 @@ public class BBallPanel extends JPanel {
         reboundsLBL.setHorizontalAlignment(SwingConstants.RIGHT);
         turnoversLBL.setHorizontalAlignment(SwingConstants.RIGHT);
 
-        // panelNorth.setBackground(Color.BLACK);
-        // panelCenter.setBackground(Color.ORANGE);
-        // panelSouth.setBackground(Color.BLACK);
         panelWest.setLayout(new BoxLayout(panelWest, BoxLayout.PAGE_AXIS));
 
         add(panelNorth, BorderLayout.NORTH);
@@ -127,7 +125,6 @@ public class BBallPanel extends JPanel {
         positionLBL.setAlignmentX(CENTER_ALIGNMENT);
         positionCMB.setAlignmentX(CENTER_ALIGNMENT);
         positionCMB.setMaximumSize(positionCMB.getPreferredSize());
-        //positionLBL.setSize(new Dimension(10,10));
 
         panelNorth.add(newBTN);
         panelNorth.add(saveBTN);
@@ -150,19 +147,19 @@ public class BBallPanel extends JPanel {
         panelSouth.add(nextBTN);
         panelSouth.add(toLastBTN);
         panelWest.add(loadBTN);
-        panelWest.add(Box.createRigidArea(new Dimension(0,10)));
+        panelWest.add(Box.createRigidArea(new Dimension(0, 10)));
         panelWest.add(row);
-        panelWest.add(Box.createRigidArea(new Dimension(0,10)));
+        panelWest.add(Box.createRigidArea(new Dimension(0, 10)));
         panelWest.add(starterCB);
-        panelWest.add(Box.createRigidArea(new Dimension(0,10)));
+        panelWest.add(Box.createRigidArea(new Dimension(0, 10)));
         panelWest.add(positionLBL);
-        panelWest.add(Box.createRigidArea(new Dimension(0,10)));
+        panelWest.add(Box.createRigidArea(new Dimension(0, 10)));
         panelWest.add(positionCMB);
 
         newBTN.addActionListener(e -> newRecord());
         saveBTN.addActionListener(e -> saveRecord());
         exitBTN.addActionListener(e -> System.exit(0));
-        loadBTN.addActionListener(e -> new FileChooser(BBallPanel.this));
+        loadBTN.addActionListener(new FileChooser());
         toFirstBTN.addActionListener(e -> firstRecord());
         previousBTN.addActionListener(e -> previousRecord());
         nextBTN.addActionListener(e -> nextRecord());
@@ -172,13 +169,12 @@ public class BBallPanel extends JPanel {
         saveBTN.setMnemonic('S');
         loadBTN.setMnemonic('O');
         exitBTN.setMnemonic('E');
-        
+
         row.setBorder(titled);
         panelNorth.setBorder(lowerEtched);
         panelSouth.setBorder(lowerEtched);
         panelCenter.setBorder(raised);
     }
-    
 
     private void newRecord() {
         index = players.size();
@@ -199,19 +195,25 @@ public class BBallPanel extends JPanel {
         rebounds = Integer.parseInt(reboundsTXT.getText());
         assists = Integer.parseInt(assistsTXT.getText());
         turnOvers = Integer.parseInt(turnoverseTXT.getText());
-        if (westRB.isSelected()) {
-            con = "west";
-        }
-        if (eastRB.isSelected()) {
-            con = "east";
-        }
         pos = positionCMB.getSelectedIndex();
         start = starterCB.isSelected();
+        if (fNameTXT.getText().equals("") || lNameTXT.getText().equals("")) {
+            JOptionPane.showMessageDialog(null, "must enter a first and last name");
+        } else {
+            if (westRB.isSelected() || eastRB.isSelected()) {
+                if (westRB.isSelected()) {
+                    con = "west";
+                }
+                if (eastRB.isSelected()) {
+                    con = "east";
+                }
+                players.add(new Player(fname, lname, shootPct, rebounds, assists, turnOvers, con, pos, start));
+                newRecord();
 
-
-        players.add(new Player(fname, lname, shootPct, rebounds, assists, turnOvers, con, pos, start));
-        newRecord();
-
+            } else {
+                JOptionPane.showMessageDialog(null, "must enter a conference");
+            }
+        }
     }
 
     private void firstRecord() {
@@ -261,8 +263,9 @@ public class BBallPanel extends JPanel {
         }
         positionCMB.setSelectedIndex(players.get(index).getPosition());
     }
-    private void makeMenu(){
-       // menu.setBackground(Color.ORANGE);
+
+    private void makeMenu() {
+        // menu.setBackground(Color.ORANGE);
         menu.add(fileMnu);
         menu.add(dataMnu);
         fileMnu.add(newMI);
@@ -275,7 +278,7 @@ public class BBallPanel extends JPanel {
         saveMI.addActionListener(e -> saveRecord());
         exitMI.addActionListener(e -> System.exit(0));
         newMI.addActionListener(e -> newRecord());
-        loadMI.addActionListener(e -> new FileChooser(BBallPanel.this));
+        loadMI.addActionListener(new FileChooser());
         firstMI.addActionListener(e -> firstRecord());
         lastMI.addActionListener(e -> lastRecord());
 
@@ -287,23 +290,47 @@ public class BBallPanel extends JPanel {
         lastMI.setAccelerator(KeyStroke.getKeyStroke("ctrl L"));
 
     }
-    public void loadData(File data) throws FileNotFoundException{
+
+    public void loadData(File data) throws FileNotFoundException {
+        System.out.println("Entered load method");
         Scanner scan = new Scanner(data);
         while (scan.hasNextLine()) {
             fname = scan.next();
             lname = scan.next();
-            shootPct = Integer.parseInt(scan.next());
-            rebounds = Integer.parseInt(scan.next());
-            assists = Integer.parseInt(scan.next());
-            turnOvers = Integer.parseInt(scan.next());
+            shootPct = scan.nextDouble();
+            rebounds = scan.nextInt();
+            assists = scan.nextInt();
+            turnOvers = scan.nextInt();
             con = scan.next();
-            pos = Integer.parseInt(scan.next());
-            start = Boolean.parseBoolean(scan.next());
-    
-    
+            pos = scan.nextInt();
+            start = scan.nextBoolean();
+            // System.out.println("fname: " + fname + " lname: " + " shootPct: " + shootPct
+            // + " rebounds: " + " assists: " + assists + " TurnOvers: " + turnOvers + "
+            // Conferance: " + con + " Pos: " + pos + " Start: " + start);
             players.add(new Player(fname, lname, shootPct, rebounds, assists, turnOvers, con, pos, start));
-            newRecord(); 
+            newRecord();
         }
         scan.close();
+    }
+
+    private class FileChooser implements ActionListener {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            JFileChooser fileChooser = new JFileChooser();
+            fileChooser.setCurrentDirectory(new File("."));
+            FileNameExtensionFilter filter = new FileNameExtensionFilter("Text Documents", "txt");
+            // fileChooser.addChoosableFileFilter(filter);
+            fileChooser.setFileFilter(filter);
+            int result = fileChooser.showOpenDialog(BBallPanel.this);
+            if (result == JFileChooser.APPROVE_OPTION) {
+                File selectedFile = fileChooser.getSelectedFile();
+                try {
+                    loadData(selectedFile);
+                    System.out.println("File loaded");
+                } catch (FileNotFoundException s) {
+                    s.printStackTrace();
+                }
+            }
+        }
     }
 }
